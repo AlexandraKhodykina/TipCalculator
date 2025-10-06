@@ -13,35 +13,44 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.hfad.tipcalculator.ui.theme.TipCalculatorTheme
 
+data class CalculatorState(
+    val orderAmount: String = "",        // Сумма заказа (текст для гибкости ввода)
+    val dishCount: String = "",          // Количество блюд
+    val tipPercentage: Float = 0f,       // Процент чаевых (0-25%)
+    val discountPercentage: Float = 0f,  // Процент скидки (рассчитывается автоматически)
+    val totalAmount: String = ""         // Итоговая сумма
+)
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        //enableEdgeToEdge()
         setContent {
             TipCalculatorTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    TipCalculatorScreen()
                 }
+
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+//fun Greeting(name: String, modifier: Modifier = Modifier) {
+//    Text(
+//        text = "Hello $name!",
+//        modifier = modifier
+//    )
+//}
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    TipCalculatorTheme {
-        Greeting("Android")
-    }
-}
+//fun GreetingPreview() {
+//    TipCalculatorTheme {
+//        Greeting("Android")
+//    }
+//}
