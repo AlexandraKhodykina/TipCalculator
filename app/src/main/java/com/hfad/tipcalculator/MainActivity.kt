@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         //enableEdgeToEdge()
         setContent {
-            TipCalculatorTheme {
+            MaterialTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -255,8 +255,9 @@ fun TipCalculatorScreen() {
 
 @Preview(showBackground = true)
 @Composable
-//fun GreetingPreview() {
-//    TipCalculatorTheme {
-//        Greeting("Android")
-//    }
-//}
+fun TipCalculatorPreview() {
+    // Используем стандартную тему для превью
+    MaterialTheme {
+        TipCalculatorScreen()
+    }
+}
