@@ -12,6 +12,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.hfad.tipcalculator.ui.theme.TipCalculatorTheme
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 
 data class CalculatorState(
     val orderAmount: String = "",        // Сумма заказа (текст для гибкости ввода)
@@ -59,12 +67,50 @@ private fun calculateTotal(state: CalculatorState): CalculatorState {
 
 
 @Composable
-//fun Greeting(name: String, modifier: Modifier = Modifier) {
-//    Text(
-//        text = "Hello $name!",
-//        modifier = modifier
-//    )
-//}
+private fun DiscountRadioButtons(
+    dishCount: String,
+    modifier: Modifier = Modifier
+) {
+    val discountOptions = listOf(
+        "1-2 блюда: 3%" to 3f,
+        "3-5 блюд: 5%" to 5f,
+        "6-10 блюд: 7%" to 7f,
+        "Более 10 блюд: 10%" to 10f
+    )
+
+    val currentDiscount = calculateDiscount(dishCount)
+
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        discountOptions.forEach { (label, discount) ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                RadioButton(
+                    selected = currentDiscount == discount,
+                    onClick = { /* Selection is automatic based on dish count */ }
+                )
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+        }
+
+        if (currentDiscount > 0f) {
+            Text(
+                text = "Текущая скидка: ${currentDiscount.toInt()}%",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
