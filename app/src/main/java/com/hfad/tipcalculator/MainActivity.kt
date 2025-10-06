@@ -38,6 +38,25 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+//Эта функция принимает количество блюд и возвращает процент скидки исходя из заданных условий
+private fun calculateDiscount(dishCount: String): Float {
+    return when (val count = dishCount.toIntOrNull() ?: 0) {
+        in 1..2 -> 3f
+        in 3..5 -> 5f
+        in 6..10 -> 7f
+        else -> if (count > 10) 10f else 0f
+    }
+}
+
+//Данная функция вычисляет итоговую сумму заказа
+private fun calculateTotal(state: CalculatorState): CalculatorState {
+    val orderAmount = state.orderAmount.toDoubleOrNull() ?: 0.0
+    val tipAmount = orderAmount * (state.tipPercentage / 100)
+    val discountAmount = orderAmount * (state.discountPercentage / 100)
+    val total = orderAmount - discountAmount + tipAmount
+    return state.copy(totalAmount = "%.2f".format(total))
+}
+
 
 @Composable
 //fun Greeting(name: String, modifier: Modifier = Modifier) {
