@@ -112,6 +112,147 @@ private fun DiscountRadioButtons(
     }
 }
 
+// Главный экран
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TipCalculatorScreen() {
+    var state by remember { mutableStateOf(CalculatorState()) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            text = "Калькулятор чаевых и скидок",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+
+        // Поле для суммы заказа
+        OutlinedTextField(
+            value = state.orderAmount,
+            onValueChange = { newValue ->
+                if (newValue.matches(Regex("^\\d*\\.?\\d*$")) || newValue.isEmpty()) {
+                    state = state.copy(orderAmount = newValue)
+                    state = calculateTotal(state)
+                }
+            },
+            label = { Text("Сумма заказа") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            placeholder = { Text("Введите сумму") }
+        )
+
+        // Поле для количества блюд
+        OutlinedTextField(
+            value = state.dishCount,
+            onValueChange = { newValue ->
+                if (newValue.matches(Regex("^\\d*$")) || newValue.isEmpty()) {
+                    state = state.copy(dishCount = newValue)
+                    val discount = calculateDiscount(newValue)
+                    state = state.copy(discountPercentage = discount)
+                    state = calculateTotal(state)
+                }
+            },
+            label = { Text("Количество блюд") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            placeholder = { Text("Введите количество") }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Слайдер для чаевых
+        Text(
+            text = "Чаевые: ${state.tipPercentage.toInt()}%",
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium
+        )
+
+        Slider(
+            value = state.tipPercentage,
+            onValueChange = { newValue ->
+                state = state.copy(tipPercentage = newValue)
+                state = calculateTotal(state)
+            },
+            valueRange = 0f..25f,
+            steps = 24,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Группа радиокнопок для скидки
+        Text(
+            text = "Скидка в зависимости от количества блюд:",
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium
+        )
+
+        DiscountRadioButtons(
+            dishCount = state.dishCount,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Итоговая сумма
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Итоговая сумма:",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = if (state.totalAmount.isNotEmpty()) state.totalAmount else "0.00",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                // Детали расчета
+                if (state.orderAmount.isNotEmpty()) {
+                    val orderAmount = state.orderAmount.toDoubleOrNull() ?: 0.0
+                    val discountAmount = orderAmount * (state.discountPercentage / 100)
+                    val tipAmount = orderAmount * (state.tipPercentage / 100)
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Сумма заказа: ${"%.2f".format(orderAmount)}",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Text(
+                            text = "Скидка: ${"%.2f".format(discountAmount)} (${state.discountPercentage.toInt()}%)",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Text(
+                            text = "Чаевые: ${"%.2f".format(tipAmount)} (${state.tipPercentage.toInt()}%)",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 @Preview(showBackground = true)
 @Composable
 //fun GreetingPreview() {
